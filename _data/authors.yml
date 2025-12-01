@@ -1,0 +1,18 @@
+# Multi-author directory.
+# Usage:
+# 1) Set `author: max_tenecsson` (or another key below) in a post/page front matter.
+# 2) If `author` is omitted, the site falls back to `site.author` in _config.yml.
+
+max:
+  name        : "Max Tenecsson"
+  email       : "onthedouble@pm.me"
+  bio         : "Personal website posts and notes."
+  avatar      : "profile.png"
+  github      : "tenecsson"
+
+# Example guest author template (uncomment and edit when needed):
+# guest_name:
+#   name        : "Guest Name"
+#   email       : "guest@example.com"
+#   bio         : "Guest contributor."
+#   avatar      : "profile.png"

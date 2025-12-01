@@ -1,2 +1,3 @@
-# tenecsson.github.io
-GitHub pages FTW
+# Max Tencesson's GitHub Pages
+
+Simplified version of [Academic Pages](https://academicpages.github.io/)
