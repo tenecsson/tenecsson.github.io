@@ -1,3 +1,18 @@
-theme: jekyll-theme-minimal
 title: Tenecsson's homepage
-description: Bookmark this to keep an eye on my project updates!
+description: "Research, projects, and experiments in AI and software systems"
+logo: /assets/profile.png
+show_downloads: false
+github:
+  is_project_page: false
+  is_user_page: true
+  repository_url: https://github.com/tenecsson
+remote_theme: pages-themes/leap-day@v0.2.0
+plugins:
+  - jekyll-remote-theme # add this line to the plugins list if you already have one
+  - jekyll-seo-tag
+  - jekyll-feed
+markdown: kramdown
+kramdown:
+  syntax_highlighter_opts:
+    block:
+      line_numbers: true
