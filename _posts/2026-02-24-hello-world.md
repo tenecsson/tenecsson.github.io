@@ -21,6 +21,10 @@ $$
 e^{i\pi} + 1 = 0
 $$
 
+$$
+\norm{x}
+$$
+
 ## Mermaid
 
 ```mermaid

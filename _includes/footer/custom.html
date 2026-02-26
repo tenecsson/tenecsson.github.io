@@ -4,6 +4,20 @@
 
 <!-- Support for MatJax -->
 <script defer src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+<script>
+    window.MathJax = {
+        tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']],
+            macros: {
+                RR: "{\\mathbb{R}}",
+                EE: "{\\mathbb{E}}",
+                Var: "{\\mathrm{Var}}",
+                norm: ["{\\left\\lVert #1 \\right\\rVert}", 1]
+            }
+        }
+    };
+</script>
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script"></script>
 
 <!-- Support for Mermaid -->
