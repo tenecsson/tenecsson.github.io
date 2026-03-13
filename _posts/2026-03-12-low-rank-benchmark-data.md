@@ -17,39 +17,50 @@ In a previous post I looked at Factor Analysis for modeling benchmark tables who
 That simple recipe ended up being robust across a wide range of simulated deviations from the ideal model, and on real benchmark tables it has been a very strong default. The likelihood-based refinements are still useful, but I now think weighted PCA in logit space should be the baseline.
 
 For model $$i$$ on benchmark $$j$$,
+
 $$
 X_{ij} \sim \operatorname{Binomial}(n_j, p_{ij}),
 \qquad
 Y_{ij} = \frac{X_{ij}}{n_j},
 $$
+
 where $$n_j$$ is the number of examples in benchmark $$j$$. We only observe the aggregated accuracies $$Y_{ij}$$, not the individual example outcomes, but we do know $$n_j$$ for each dataset. Thus we also have a good handle on the variance
+
 $$
 \operatorname{Var}(Y_{ij}) = \frac{p_{ij}(1-p_{ij})}{n_j}.
 $$
 
 The main structural fact is that models and benchmarks are correlated. One model may be distilled from another or trained with a similar pipeline. Benchmarks may be measuring similar capabilities. A simple way to encode this is to model the natural parameter on the logit scale:
+
 $$
 \eta_{ij} = \operatorname{logit}(p_{ij}) = \mu_i + \langle L_i, z_j \rangle.
 $$
+
 The row intercept $$\mu_i$$ captures overall model strength, while the low-rank term captures a small number of shared latent directions. Here $$L_i \in \mathbb{R}^k$$ is the latent vector for model $$i$$ and $$z_j \in \mathbb{R}^k$$ is the latent vector for dataset $$j$$.
 
 ## Weighted PCA in logit space
 
 To stay close to this model, start by transforming the observed data once:
+
 $$
 \widetilde Y_{ij} =
 \operatorname{logit}\!\left(\frac{X_{ij} + a}{n_j + 2a}\right),
 \qquad a > 0.
 $$
+
 We typically use $$a=1/2$$. If we apply the delta method, we find that
+
 $$
 \operatorname{Var}(\widetilde Y_{ij}) \approx \frac{1}{n_j (p_{ij}+\delta_j)(1-p_{ij}+\delta_j)} \qquad \delta_j = a/n_j.
 $$
+
 The full expression is messier; the display above is only meant to capture the scale. The key point is that larger benchmarks are intrinsically more precise. In principle one could also weight by a plug-in estimate of $$p_{ij}(1-p_{ij})$$, but in practice the known counts $$n_j$$ already capture the dominant heteroskedasticity and are much stabler. This suggests fitting the low-rank component by minimizing
+
 $$
 \min_{\mu,\; B\; }
 \sum_{i,j} n_j \bigl(\widetilde Y_{ij} - \mu_i - B_{ij}\bigr)^2 \quad \textrm{subject to} \operatorname{rank}(B)\le k.
 $$
+
 If $$D = \operatorname{diag}(n_1,\dots,n_d)$$, this is just ordinary PCA on
 $$
 (\widetilde Y - \mu \mathbf{1}^\top) D^{1/2}.
@@ -68,8 +79,7 @@ U_k \Sigma_k V_k^\top = \operatorname{SVD}\left(
 $$.
 3. Factor the rank-$$k$$ term as
 $$
-L = U_k \Sigma_k^{1/2},
-\qquad
+L = U_k \Sigma_k^{1/2},\;
 Z = \Sigma_k^{1/2} V_k^\top D^{-1/2},
 $$
 so that $$B \approx LZ$$ and column $$j$$ of $$Z$$ is $$z_j$$.
@@ -103,27 +113,36 @@ This hard-impute loop reuses the complete-data routine almost unchanged.
 ## Proximal weighted-PCA IRLS
 
 The one method that was consistently competitive with, and sometimes slightly better than, weighted PCA was Iteratively Reweighted Least Squares (IRLS) with a proximal regularization toward the weighted-PCA solution. Let $$\eta^{\mathrm{pca}}$$ be the weighted-PCA fit and let $$J(\theta)$$ be the binomial negative log-likelihood. Instead of minimizing only $$J(\theta)$$, which can overfit under misspecification, solve
+
 $$
 J_{\tau}(\theta)=J(\theta)+
 \frac{\tau}{2}
 \sum_{i,j} n_j \bigl(\eta_{ij}(\theta) - \eta^{\mathrm{pca}}_{ij}\bigr)^2.
 $$
+
 Here $$\theta=(\mu,L,Z)$$ parameterizes
+
 $$ 
 \eta_{ij}(\theta)=\mu_i + \langle L_i , z_j\rangle.
 $$ 
+
 At the current iterate $$\eta^{(t)}$$, define
+
 $$
 p_{ij}^{(t)}=\sigma(\eta_{ij}^{(t)}),\qquad
 w_{ij}^{(t)}=n_j p_{ij}^{(t)}(1-p_{ij}^{(t)}),
 $$
+
 and the IRLS working response
+
 $$
 r_{ij}^{(t)}=
 \eta_{ij}^{(t)}+
 \frac{X_{ij}-n_j p_{ij}^{(t)}}{w_{ij}^{(t)}}.
 $$
+
 Then the local quadratic problem is
+
 $$
 \min_\theta
 \frac12\sum_{i,j}
@@ -133,7 +152,9 @@ w_{ij}^{(t)}
 \frac{\tau}{2}\sum_{i,j}
 n_j\bigl(\eta_{ij}(\theta)-\eta^{\mathrm{pca}}_{ij}\bigr)^2.
 $$
+
 Combining the two quadratic terms entrywise gives
+
 $$
 \bar w_{ij}^{(t)} = w_{ij}^{(t)}+\tau n_j,
 \qquad
@@ -144,6 +165,7 @@ w_{ij}^{(t)} r_{ij}^{(t)}+\tau n_j \eta^{\mathrm{pca}}_{ij}
 w_{ij}^{(t)}+\tau n_j
 }.
 $$
+
 So each proximal IRLS step is exactly the same alternating weighted least-squares update as ordinary IRLS, but with $$\bar w^{(t)}$$ and $$\bar r^{(t)}$$ in place of $$w^{(t)}$$ and $$r^{(t)}$$. In other words, the proximal term acts like a pseudo-observation centered at $$\eta^{\mathrm{pca}}$$ with weight $$\tau n_j$$. For missing entries the likelihood weight is zero, so the update falls back to $$\bar r_{ij}^{(t)}=\eta^{\mathrm{pca}}_{ij}$$ and $$\bar w_{ij}^{(t)}=\tau n_j$$. This keeps the likelihood fit anchored to the robust weighted-PCA solution even when the matrix is incomplete.
 
 For incomplete data, I use the same outer structure as above: fill in the missing entries using the current parameters, then run the inner proximal-IRLS updates on that completed matrix. The important point is that the proximal term keeps the missing cells tied to the more robust weighted-PCA estimate rather than letting them drift.
