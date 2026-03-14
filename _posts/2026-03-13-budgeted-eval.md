@@ -36,7 +36,7 @@ $$
 \hat \eta_{ij} = \mu_i + a_i^\top z_j.
 $$
 
-Here `\mu_i` is a run-specific intercept, `a_i` is a run embedding, and `z_j` is a benchmark embedding.
+Here $$\mu_i$$ is a run-specific intercept, $$a_i$$ is a run embedding, and $$z_j$$ is a benchmark embedding.
 
 It is convenient to package those into
 
@@ -93,7 +93,7 @@ $$
 \hat K = \Phi \hat C_x \Phi^\top.
 $$
 
-This is the key object for design. Once `\hat K` is known, we have a prior over the entire benchmark profile of a new run.
+This is the key object for design. Once $$\hat K$$ is known, we have a prior over the entire benchmark profile of a new run.
 
 ## The Core Objective
 
@@ -119,7 +119,7 @@ $$
 
 where $$\bar p_j$$ is a benchmark-level reference accuracy, such as the historical mean accuracy.
 
-If I observe a subset `S`, the posterior covariance of the full latent benchmark vector is
+If I observe a subset $$S$$, the posterior covariance of the full latent benchmark vector is
 
 $$
 \hat K_{* \mid S}=\hat K-
@@ -128,7 +128,7 @@ $$
 \hat K_{S:}.
 $$
 
-So the design problem is: choose `S` so that posterior uncertainty about the full vector becomes small.
+So the design problem is: choose $$S$$ so that posterior uncertainty about the full vector becomes small.
 
 An obvious entropy-like objective would be some log-determinant criterion. But there is a numerical wrinkle: the low rank fit induces a low-rank covariance in a much larger benchmark space, so raw entropy formulas can become singular. My solution is to score a set $$S$$ by Gaussian mutual information:
 
@@ -153,7 +153,7 @@ This objective is monotone and submodular. Intuitively, each extra benchmark giv
 
 ## Does the selector depend on the embeddings?
 
-At first glance this looks embedding-dependent because the construction started from the low-rank factors `a_i` and `z_j`. But the selector is actually invariant to the exact latent coordinate system.
+At first glance this looks embedding-dependent because the construction started from the low-rank factors $$a_i$$ and $$z_j$$. But the selector is actually invariant to the exact latent coordinate system.
 
 The reason is that everything downstream can be written in observable space. The same prior covariance satisfies
 
@@ -235,7 +235,7 @@ The output is the same as ordinary greedy, but the number of objective evaluatio
 
 ### 3. Knapsack constraints and Sviridenko
 
-Real benchmarks do not all cost the same. Suppose the cost is `c_j = n_j`, so the constraint is
+Real benchmarks do not all cost the same. Suppose the cost is $$c_j = n_j$$, so the constraint is
 
 $$
 \sum_{j \in S} c_j \leq B.
