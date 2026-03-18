@@ -9,3 +9,4 @@ $$
 More text
 ```
 
+If you find yourself referencing another post in this site, use markdown link syntax
