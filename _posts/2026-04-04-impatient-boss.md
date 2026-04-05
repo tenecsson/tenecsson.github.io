@@ -9,8 +9,6 @@ tags:
   - confidence-sequences
 ---
 
-# The Impatient Boss Problem and Choosing your Confidence Sequence
-
 Suppose you are running an online experiment with a bandit over $$k$$ treatments. Let's say you use an upper confidence bound (UCB) algorithm to select arms. You need to form valid confidence sequences for the arm means, and you have to choose *where they are tight*. Some constructions spend their error budget on the near future, some on the far future, and all of them are valid. 
 
 If the experiment were guaranteed to run for a fixed horizon $$T$$, the usual question would be which bound is best tuned for that horizon. But here the boss is impatient: he may stop the experiment at any time if early regret looks too large.
