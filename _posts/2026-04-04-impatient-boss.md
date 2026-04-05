@@ -26,26 +26,31 @@ By modeling this, we can relate the width of the prior $$\rho^2$$ directly to th
 ## 1. Setup & The Robbins Mixture
 
 We have $$k$$ arms with sub-Gaussian means
+
 $$
 \mu_1, \mu_2, \dots, \mu_k.
 $$
 
 Let the best arm have mean $$\mu_* = \max_i \mu_i$$, and the runner-up have mean $$\mu_{(2)}$$. Define the top-two gap
+
 $$
 \Delta = \mu_* - \mu_{(2)} > 0.
 $$
 
 The experiment is stopped at a random time $$\tau \sim \mathrm{Geom}(p)$$ on $$\{1,2,\dots\}$$, so
+
 $$
 \Pr(\tau \ge t) = (1-p)^{t-1}.
 $$
 
 To track the means, we construct a Robbins mixture martingale. For a standard sub-Gaussian arm, we take the basic supermartingale $$M_t(\lambda) = \exp(\lambda S_t - \lambda^2 t / 2)$$ and integrate it over a Gaussian prior $$\lambda \sim \mathcal{N}(0, \rho^2)$$. By Ville's inequality, this yields a confidence sequence whose radius at time $$t$$ is roughly:
+
 $$
 \mathrm{rad}_t(\rho) \approx \sqrt{\frac{t\rho^2 + 1}{t^2 \rho^2} \log\left(\frac{\sqrt{t\rho^2 + 1}}{\alpha}\right)}
 $$
 
 If you analyze this radius, it shrinks fastest and is tightest around the intrinsic time:
+
 $$
 t \approx \frac{1}{\rho^2}
 $$
@@ -57,6 +62,7 @@ Which value of $$\rho^2$$ minimizes expected regret at the random shutdown time?
 ## 2. Geometric Shutdown Means Discounted Regret
 
 Let $$r_t(\rho)$$ be the instantaneous regret at time $$t$$ for the algorithm tuned with prior variance $$\rho^2$$. Then
+
 $$
 \mathbb{E}[R_\tau(\rho)]
 = \sum_{t \ge 1} \Pr(\tau \ge t)\,\mathbb{E}[r_t(\rho)]
@@ -76,15 +82,19 @@ To optimize $$\rho^2$$, we need a rough model of how the Robbins mixture behaves
 We will use two standard approximations for how the confidence sequence explores and commits.
 
 First, the algorithm needs enough informative samples to shrink the radius down to the gap size $$\Delta$$. Based on the Robbins radius, achieving $$\mathrm{rad}_t \approx \Delta$$ requires a learning phase of roughly
+
 $$
 N(h) \approx \frac{a}{\Delta^2}\log h
 $$
+
 rounds before it has effectively separated the best arm from the runner-up. The constant $$a > 0$$ absorbs the exact log factors.
 
 Second, after that learning phase, the residual probability of being wrong—driven by the polynomial tail of the mixture—is roughly
+
 $$
 q(h) \approx \frac{C}{h}
 $$
+
 where $$C > 0$$. 
 
 The tradeoff is clear:
@@ -98,6 +108,7 @@ Now approximate the regret trajectory by two phases:
 2.  After that, it identifies the best arm, but with probability $$q(h)$$ it effectively commits incorrectly and continues paying regret $$\Delta$$ forever.
 
 Under this approximation, expected discounted regret is:
+
 $$
 J(h)
 \approx
@@ -107,6 +118,7 @@ J(h)
 $$
 
 The first term is the discounted cost of exploration. The second term is the discounted future cost of being wrong. Evaluating the geometric sum gives:
+
 $$
 J(h)
 \approx
@@ -119,6 +131,7 @@ $$
 ## 5. Optimize Over the Prior
 
 Let $$s = -\log(1-p)$$. Then the survival probability after the learning phase is:
+
 $$
 (1-p)^{N(h)}
 = \exp\!\bigl(-s N(h)\bigr)
@@ -132,6 +145,7 @@ $$
 $$
 
 Substituting our mixture tail probability $$q(h) \approx C h^{-1}$$, the objective becomes:
+
 $$
 J(h)
 \approx
@@ -142,6 +156,7 @@ J(h)
 $$
 
 To find the optimal tuning, differentiate with respect to $$h$$:
+
 $$
 \frac{dJ}{dh}
 \propto
@@ -149,11 +164,13 @@ $$
 $$
 
 Setting this to zero reveals the optimal nominal horizon:
+
 $$
 h_* = C \frac{1+\eta}{\eta} = C \left(1 + \frac{\Delta^2}{a s}\right).
 $$
 
 Because $$h = 1/\rho^2$$, the exact optimal prior variance inside this approximation is:
+
 $$
 \rho^2_* = \frac{1}{C \left(1 + \frac{\Delta^2}{a s}\right)}
 $$
@@ -163,11 +180,13 @@ $$
 When the boss is fairly patient in the sense that $$p$$ is small, we can approximate $$s = -\log(1-p) \approx p$$.
 
 The optimal nominal horizon simplifies to:
+
 $$
 h_* \approx C \left(1 + \frac{\Delta^2}{a p}\right) \asymp \frac{\Delta^2}{p}.
 $$
 
 Converting this back to the language of the Robbins mixture, the optimal Gaussian prior variance scales as:
+
 $$
 \rho^2_* \asymp \frac{p}{\Delta^2}.
 $$
@@ -181,11 +200,13 @@ The crude scale $$\rho^2 \approx p$$ is only the gap-free answer. When the probl
 It is useful to separate the tightness point of the sequence from the actual number of exploration rounds the algorithm executes. 
 
 We just established that the sequence should be tightest around time:
+
 $$
 t \approx \frac{1}{\rho^2_*} \asymp \frac{\Delta^2}{p}
 $$
 
 But the number of rounds needed to actually sort out the top two arms is much smaller:
+
 $$
 N(\rho_*)
 \approx
@@ -210,6 +231,7 @@ This argument is intentionally coarse. It is not an exact regret theorem for the
 The constants $$a$$ and $$C$$ matter in practice, and they can be worked out explicitly by taking the exact derivative of the Robbins bound rather than a simplified $$N(h)$$ phase model. Alternatively, if your job is to do / oversee such experiments you may have an idea of what $$p$$ and $$\Delta$$ typically are. 
 
 As much as I find coarse arguments like this a bit lacking, the main message is robust. A geometric shutdown time doesn't ask for a one-size-fits-all confidence sequence. It asks for an exploration-versus-mistake tradeoff optimized for discounted regret, achieved by setting your prior variance to:
+
 $$
 \boxed{
 \rho^2 \sim \frac{p}{\Delta^2}
