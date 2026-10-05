@@ -1,6 +1,6 @@
 ---
 title: "Safe stopping for git bayesect"
-date: 2026-04-25
+date: 2026-10-05
 permalink: /posts/safe-bayesect/
 author: max
 tags:
@@ -14,7 +14,7 @@ It stops when one commit holds 95% of its posterior. So: **when git bayesect
 says 95%, is it right 95% of the time?** We simulated about 27,000
 bisections to find out, and built a stopping rule that keeps its promise.
 Methods and full results are in the
-[technical companion](technical-companion.md).
+[technical companion](/posts/safe-bayesect-technical-companion/).
 
 In short:
 
@@ -26,8 +26,8 @@ In short:
   sounding sure:** 74% with correlated reruns, 26% with a mistaken prior.
 - **Safe stopping** (`--safe`) is wrong at most 5% of the time when the
   assumptions hold, even if CI conditions change during the bisection. It
-  uses 18ΓÇô35% more test runs than git bayesect: 17ΓÇô28% more where git
-  bayesect would have been right, and 1.5ΓÇô5├ù as many where it would have
+  uses 18–35% more test runs than git bayesect: 17–28% more where git
+  bayesect would have been right, and 1.5–5× as many where it would have
   been wrong.
 - **Some violations still defeat it.** Correlated reruns and a broken commit
   fool it nearly as badly as git bayesect. `--check-assumptions` declines to
@@ -52,7 +52,7 @@ and it settles on the right commit.
 
 git bayesect assumes that one commit changes the failure rate, and that
 every run of a commit fails independently with the same probability. With
-64 commits and a 10% ΓåÆ 30% regression, this is how often it was wrong at a
+64 commits and a 10% → 30% regression, this is how often it was wrong at a
 claimed 95% when ordinary wrinkles break that:
 
 | what happens | wrong at a claimed 95% |
@@ -97,16 +97,17 @@ the culprit still share a failure rate at every moment, and that is all the
 guarantee needs.
 
 The price is test runs, but not a flat surcharge. When the assumptions hold
-(15 settings, 16ΓÇô1024 commits, five pairs of failure rates), safe stopping
+(15 settings, 16–1024 commits, five pairs of failure rates), safe stopping
 was wrong, or ruled out every commit, at most 2.9% of the time:
-- **where git bayesect would have been right,** it used 1.17ΓÇô1.28├ù the test
+
+- **where git bayesect would have been right,** it used 1.17–1.28× the test
   runs;
-- **where git bayesect would have been wrong,** it used 1.5ΓÇô5.1├ù, testing on
+- **where git bayesect would have been wrong,** it used 1.5–5.1×, testing on
   instead of trusting a lucky streak.
 
 A uniform fix is no substitute. Running every git bayesect bisection to 1.5
 times as many test runs costs more than safe stopping, yet still leaves 8.3%
-wrong at 10% ΓåÆ 20%, where safe stopping is wrong or empty 2.8% of the time.
+wrong at 10% → 20%, where safe stopping is wrong or empty 2.8% of the time.
 Raising the confidence works only if you know by how much, which depends on
 the unknown failure rates.
 
@@ -145,6 +146,7 @@ assumptions hold, and it doesn't catch the other violations.
 
 ## Using it
 
+The commands below describe a proposed upstream addition to git bayesect.
 Safe stopping is a mode chosen at `start`. It applies to `run`,
 `pass`/`fail` and `status`, and the default behavior is unchanged:
 
