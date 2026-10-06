@@ -28,6 +28,7 @@
     "layout/masthead",
     "layout/navigation",
     "layout/footer",
+    "syntax/{{ site.syntax_theme | default: 'github' }}",
     "syntax",
 
     "layout/forms",

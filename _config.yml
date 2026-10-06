@@ -9,6 +9,7 @@
 # Basic Site Settings
 locale                   : "en-US"
 site_theme               : "dirt" # The available themes options are "default", "air", "sunrise", "mint", "dirt" and "contrast"
+syntax_theme             : "github" # Code block palettes: "github" or "default" (original site palette)
 title                    : "Tenecsson's Corner"
 title_separator          : "-"
 name                     : &name "Max Tenecsson"
@@ -181,6 +182,7 @@ exclude:
   - config
   - Dockerfile
   - Gemfile
+  - Gemfile.lock
   - Gruntfile.js
   - gulpfile.js
   - LICENSE
@@ -190,6 +192,7 @@ exclude:
   - package.json*
   - Rakefile
   - README
+  - scripts
   - tmp
   - vendor
 keep_files:
