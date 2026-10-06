@@ -1,0 +1,32 @@
+/* Original site palette. Backgrounds and plain text follow site_theme. */
+:root {
+  --syntax-background: var(--global-code-background-color);
+  --syntax-border: var(--global-border-color);
+  --syntax-number: var(--syntax-string);
+  --syntax-operator: var(--syntax-keyword);
+  --syntax-docstring: var(--syntax-text);
+  --syntax-builtin-pseudo: var(--syntax-function);
+  --syntax-declaration: var(--syntax-function);
+  --syntax-type: var(--syntax-error);
+  --syntax-tag: var(--syntax-function);
+  --syntax-variable: var(--syntax-function);
+  --syntax-inserted: var(--syntax-keyword);
+  --syntax-text: var(--global-code-text-color);
+  --syntax-comment: #59636e;
+  --syntax-keyword: #6f42c1;
+  --syntax-string: #116b35;
+  --syntax-constant: #953800;
+  --syntax-function: #0550ae;
+  --syntax-builtin: #825000;
+  --syntax-error: #b42318;
+}
+
+html[data-theme="dark"] {
+  --syntax-comment: #a6adb5;
+  --syntax-keyword: #d2a8ff;
+  --syntax-string: #a5d6ff;
+  --syntax-constant: #ffa657;
+  --syntax-function: #79c0ff;
+  --syntax-builtin: #e3b341;
+  --syntax-error: #ff7b72;
+}
